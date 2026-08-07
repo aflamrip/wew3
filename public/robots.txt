@@ -17,6 +17,6 @@ Disallow: /_server-islands/
 Disallow: /cdn-cgi/
 
 # Sitemaps Index & Feeds
-Sitemap: https://ma3ak.top/sitemap-index.xml
-Sitemap: https://ma3ak.top/rss.xml
-Sitemap: https://ma3ak.top/atom.xml
+Sitemap: https://a.ma3ak.top/sitemap-index.xml
+Sitemap: https://a.ma3ak.top/rss.xml
+Sitemap: https://a.ma3ak.top/atom.xml
