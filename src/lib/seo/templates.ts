@@ -74,8 +74,8 @@ export function arabicMovieTemplate(input: SeoItemInput): SeoMetadata {
   const { pubDate, modDate } = getFormattedDates(item);
   const poster = getPosterUrl(item, 'movie');
 
-  let seoTitle = isWatchPage ? `مشاهدة فيلم ${title} ${year} كامل HD` : `فيلم ${title} ${year} كامل HD`;
-  let description = isWatchPage ? `مشاهدة وتحميل فيلم ${title} ${year} اون لاين بجودة عالية HD كامل ${overview}` : `مشاهدة فيلم ${title} اون لاين - ${overview}`;
+  let seoTitle = isWatchPage ? `مشاهدة فيلم ${title} ${year} كامل` : `فيلم ${title} ${year} كامل`;
+  let description = isWatchPage ? `مشاهدة وتحميل فيلم ${title} ${year} اون لاين بجودة عالية كامل ${overview}` : `مشاهدة فيلم ${title} اون لاين - ${overview}`;
 
   const director = item.data?.director;
   const cast = Array.isArray(item.data?.cast) ? item.data.cast : [];

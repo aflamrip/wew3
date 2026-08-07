@@ -17,14 +17,12 @@ const { title, description, type = 'website', item, season, episode, canonical, 
 const siteUrl = Astro.site ? Astro.site.toString().replace(/\/$/, '') : 'https://ma3ak.top';
 const currentUrl = new URL(Astro.url.pathname, siteUrl).toString();
 
-// If canonical is provided as a path (/tv/slug), turn it into absolute URL with domain
-let finalCanonical = currentUrl;
+// Dynamic Canonical URL logic (Strictly matches current page URL dynamically)
+let finalCanonical = new URL(Astro.url.pathname, siteUrl).toString().replace(/\/$/, '');
 if (canonical) {
-  if (canonical.startsWith('http')) {
-    finalCanonical = canonical;
-  } else {
-    finalCanonical = `${siteUrl}${canonical.startsWith('/') ? '' : '/'}${canonical}`;
-  }
+  finalCanonical = canonical.startsWith('http') 
+    ? canonical 
+    : `${siteUrl}${canonical.startsWith('/') ? '' : '/'}${canonical}`;
 }
 
 // Robots logic
