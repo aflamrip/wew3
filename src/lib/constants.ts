@@ -214,7 +214,14 @@ export async function getSitemapData(type: 'movie' | 'tv', pageCount = 45) {
 }
 
 export function getFullSiteUrl(context: any): string {
-  if (context.url && context.url.origin) {
+  if (context.request) {
+    const host = context.request.headers.get('x-forwarded-host') || context.request.headers.get('host');
+    const proto = context.request.headers.get('x-forwarded-proto') || 'https';
+    if (host) {
+      return `${proto}://${host}`.replace(/\/$/, '');
+    }
+  }
+  if (context.url && context.url.origin && context.url.origin !== 'null') {
     return context.url.origin.replace(/\/$/, '');
   }
   const site = context.site ? context.site.toString().replace(/\/$/, '') : 'https://ma3ak.top';

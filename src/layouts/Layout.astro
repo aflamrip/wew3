@@ -15,9 +15,11 @@ interface Props {
 
 import { getSeoMetadata } from '../lib/seo/engine';
 
+import { getFullSiteUrl } from '../lib/constants';
+
 const { title, description = "موقع معاك سيما لمشاهدة الافلام والمسلسلات", type, item, season, episode, canonical } = Astro.props;
 
-const siteUrl = Astro.site ? Astro.site.toString().replace(/\/$/, '') : 'https://ma3ak.top';
+const siteUrl = getFullSiteUrl(Astro);
 const currentUrl = new URL(Astro.url.pathname, siteUrl).toString();
 
 const meta = getSeoMetadata({

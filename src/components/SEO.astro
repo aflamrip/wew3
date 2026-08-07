@@ -12,9 +12,11 @@ interface Props {
 
 import { getSeoMetadata } from '../lib/seo/engine';
 
+import { getFullSiteUrl } from '../lib/constants';
+
 const { title, description, type = 'website', item, season, episode, canonical, noindex = false } = Astro.props;
 
-const siteUrl = Astro.site ? Astro.site.toString().replace(/\/$/, '') : 'https://ma3ak.top';
+const siteUrl = getFullSiteUrl(Astro);
 const currentUrl = new URL(Astro.url.pathname, siteUrl).toString();
 
 // Dynamic Canonical URL logic (Strictly matches current page URL dynamically)
