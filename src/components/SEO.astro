@@ -27,8 +27,10 @@ if (canonical) {
     : `${siteUrl}${canonical.startsWith('/') ? '' : '/'}${canonical}`;
 }
 
-// Robots logic
-const robots = noindex ? "noindex, follow" : "index, follow";
+// Advanced Robots Meta logic (Optimized for Rich Snippets & Search Previews)
+const robots = noindex 
+  ? "noindex, follow" 
+  : "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1";
 
 let finalSeoTitle = title;
 let finalMetaDescription = description;

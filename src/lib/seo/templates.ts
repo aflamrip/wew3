@@ -38,7 +38,10 @@ const cleanTitle = (str: string) => {
 
 const smartTruncate = (str: string, max: number) => {
   if (!str) return '';
-  return str.length > max ? str.substring(0, max - 3) + '...' : str;
+  if (str.length <= max) return str;
+  const truncated = str.substring(0, max - 3);
+  const lastSpace = truncated.lastIndexOf(' ');
+  return (lastSpace > 15 ? truncated.substring(0, lastSpace) : truncated).trim() + '...';
 };
 
 const getPosterUrl = (item: any, type: 'movie' | 'tv') => {
