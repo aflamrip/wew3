@@ -1,0 +1,22 @@
+# ==============================================================================
+# robots.txt for معاك سيما (https://ma3ak.top)
+# Optimized for Googlebot & Modern Search Engines (SEO Best Practices)
+# ==============================================================================
+
+User-agent: *
+Allow: /
+Allow: /movie/
+Allow: /tv/
+Allow: /watch/
+Allow: /categories
+Allow: /search
+
+# Disallow Internal API Endpoints & Administrative/Search Parameter Overhead
+Disallow: /api/
+Disallow: /_server-islands/
+Disallow: /cdn-cgi/
+
+# Sitemaps Index & Feeds
+Sitemap: https://ma3ak.top/sitemap-index.xml
+Sitemap: https://ma3ak.top/rss.xml
+Sitemap: https://ma3ak.top/atom.xml
