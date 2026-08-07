@@ -54,7 +54,7 @@ export const GET: APIRoute = async (context) => {
       genres:      Array.isArray(item.data?.genres) ? item.data.genres : [],
       lang:        item.data?.lang || 'ar',
       pubDate,
-      imageUrl:    `${CDN_URLS.STATIC}/${dirType}/${prefix}/${id}/${id}.webp`,
+      imageUrl:    item.data?.poster || `${siteUrl}/cdn-cgi/image/width=240,quality=45,format=auto/cdn/${dirType}/${prefix}/${id}/${id}.webp`,
       pageUrl:     `${siteUrl}/${type}/${slug}`,
     };
   };
@@ -104,7 +104,7 @@ ${categories}
     <webMaster>webmaster@ma3ak.top (معاك سيما)</webMaster>
     <ttl>60</ttl>
     <image>
-      <url>${siteUrl}/favicon.svg</url>
+      <url>${siteUrl}/favicon.png</url>
       <title>معاك سيما</title>
       <link>${siteUrl}</link>
       <width>144</width>

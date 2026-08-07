@@ -60,7 +60,7 @@ export const GET: APIRoute = async (context) => {
       cast:        Array.isArray(item.data?.cast) ? item.data.cast.slice(0, 5) : [],
       pubDate,
       updatedDate: pubDate,
-      imageUrl:    `${CDN_URLS.STATIC}/${dirType}/${prefix}/${id}/${id}.webp`,
+      imageUrl:    item.data?.poster || `${siteUrl}/cdn-cgi/image/width=240,quality=45,format=auto/cdn/${dirType}/${prefix}/${id}/${id}.webp`,
       pageUrl:     `${siteUrl}/${type}/${slug}`,
       watchUrl:    `${siteUrl}/watch/${type}/${slug}`,
     };
@@ -142,8 +142,8 @@ ${categories}
     <email>info@ma3ak.top</email>
   </author>
   <generator uri="${siteUrl}" version="1.0">معاك سيما</generator>
-  <icon>${siteUrl}/favicon.svg</icon>
-  <logo>${siteUrl}/favicon.svg</logo>
+  <icon>${siteUrl}/favicon.png</icon>
+  <logo>${siteUrl}/favicon.png</logo>
   <rights type="text">© ${new Date().getFullYear()} معاك سيما. جميع الحقوق محفوظة.</rights>
 
 ${entriesXml}
