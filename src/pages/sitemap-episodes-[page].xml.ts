@@ -201,29 +201,29 @@ export const GET: APIRoute = async (context) => {
 
   // Build URL entries with Video sitemap extensions
   const urlEntries = capped.map(ep => {
-    const seasonStr  = pad(ep.season);
-    const episodeNum = ep.episode;
-    const titleAr    = `مشاهدة مسلسل ${escapeXml(ep.showTitle)} الموسم ${ep.season} الحلقة ${episodeNum}`;
-    const description = escapeXml(
-      `مشاهدة الحلقة ${episodeNum} من الموسم ${ep.season} من مسلسل ${ep.showTitle} أون لاين على معاك سيما`
-    );
+    const rawTitle   = `مشاهدة مسلسل ${ep.showTitle} الموسم ${ep.season} الحلقة ${ep.episode}`;
+    const titleAr    = escapeXml(rawTitle);
+    const rawDesc    = `مشاهدة الحلقة ${ep.episode} من الموسم ${ep.season} من مسلسل ${ep.showTitle} أون لاين على معاك سيما`;
+    const description = escapeXml(rawDesc);
+    const locUrl     = escapeXml(ep.loc);
+    const imgUrl     = escapeXml(ep.imageUrl);
 
-      return `  <url>
-    <loc>${escapeXml(ep.loc)}</loc>
+    return `  <url>
+    <loc>${locUrl}</loc>
     <lastmod>${ep.lastmod}</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
     <image:image>
-      <image:loc>${escapeXml(ep.imageUrl)}</image:loc>
+      <image:loc>${imgUrl}</image:loc>
       <image:title>${titleAr}</image:title>
       <image:caption>${description}</image:caption>
     </image:image>
     <video:video>
-      <video:thumbnail_loc>${escapeXml(ep.imageUrl)}</video:thumbnail_loc>
+      <video:thumbnail_loc>${imgUrl}</video:thumbnail_loc>
       <video:title>${titleAr}</video:title>
       <video:description>${description}</video:description>
-      <video:content_loc>${escapeXml(ep.loc)}</video:content_loc>
-      <video:player_loc>${escapeXml(ep.loc)}</video:player_loc>
+      <video:content_loc>${locUrl}</video:content_loc>
+      <video:player_loc>${locUrl}</video:player_loc>
       <video:publication_date>${ep.lastmod}</video:publication_date>
       <video:family_friendly>yes</video:family_friendly>
     </video:video>
