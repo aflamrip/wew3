@@ -208,11 +208,11 @@ export const GET: APIRoute = async (context) => {
       `مشاهدة الحلقة ${episodeNum} من الموسم ${ep.season} من مسلسل ${ep.showTitle} أون لاين على معاك سيما`
     );
 
-    return `  <url>
+      return `  <url>
     <loc>${escapeXml(ep.loc)}</loc>
     <lastmod>${ep.lastmod}</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
+    <priority>0.7</priority>
     <image:image>
       <image:loc>${escapeXml(ep.imageUrl)}</image:loc>
       <image:title>${titleAr}</image:title>
@@ -222,7 +222,10 @@ export const GET: APIRoute = async (context) => {
       <video:thumbnail_loc>${escapeXml(ep.imageUrl)}</video:thumbnail_loc>
       <video:title>${titleAr}</video:title>
       <video:description>${description}</video:description>
+      <video:content_loc>${escapeXml(ep.loc)}</video:content_loc>
       <video:player_loc>${escapeXml(ep.loc)}</video:player_loc>
+      <video:publication_date>${ep.lastmod}</video:publication_date>
+      <video:family_friendly>yes</video:family_friendly>
     </video:video>
   </url>`;
   }).join('\n');
@@ -237,7 +240,7 @@ ${urlEntries}
   return new Response(xml, {
     headers: {
       'Content-Type': 'application/xml; charset=utf-8',
-      'Cache-Control': 'public, s-maxage=3600, stale-while-revalidate=14400',
+      'Cache-Control': 'public, s-maxage=900, stale-while-revalidate=3600',
     },
   });
 };

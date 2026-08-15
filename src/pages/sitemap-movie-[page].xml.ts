@@ -47,11 +47,21 @@ export const GET: APIRoute = async (context) => {
       <image:title>${escapeXml(item.data?.title || '')}</image:title>
       <image:caption>${escapeXml(`فيلم ${item.data?.title || ''} ${year}`)}</image:caption>
     </image:image>
+    <video:video>
+      <video:thumbnail_loc>${imageUrl}</video:thumbnail_loc>
+      <video:title>${escapeXml(`مشاهدة فيلم ${item.data?.title || ''} ${year} كامل`)}</video:title>
+      <video:description>${escapeXml(item.data?.overview || `مشاهدة وتحميل فيلم ${item.data?.title || ''} ${year} اون لاين بجودة عالية HD`)}</video:description>
+      <video:content_loc>${siteUrl}/watch/movie/${slug}</video:content_loc>
+      <video:player_loc>${siteUrl}/watch/movie/${slug}</video:player_loc>
+      <video:publication_date>${lastmod}</video:publication_date>
+      <video:family_friendly>yes</video:family_friendly>
+    </video:video>
   </url>`;
   }).join('\n');
 
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:video="http://www.google.com/schemas/sitemap-video/1.1"
         xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
 ${urlEntries}
 </urlset>`;
@@ -59,7 +69,7 @@ ${urlEntries}
   return new Response(xml, {
     headers: {
       'Content-Type': 'application/xml; charset=utf-8',
-      'Cache-Control': 'public, s-maxage=3600, stale-while-revalidate=14400',
+      'Cache-Control': 'public, s-maxage=900, stale-while-revalidate=3600',
     },
   });
 };

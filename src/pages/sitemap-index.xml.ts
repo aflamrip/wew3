@@ -4,7 +4,7 @@ import { getSitemapData, getFullSiteUrl, formatDateWithOffset } from '../lib/con
 
 /** Shows processed per episode-sitemap page (must match sitemap-episodes-[page].xml.ts) */
 const SHOWS_PER_EPISODE_PAGE = 20;
-/** Threshold for movies / TV / cast pagination */
+/** Threshold for movies / TV pagination */
 const ITEMS_PER_SITEMAP = 500;
 
 export const GET: APIRoute = async (context) => {
@@ -26,8 +26,8 @@ export const GET: APIRoute = async (context) => {
   // ── Build entries ────────────────────────────────────────────────────────
   const entries: string[] = [];
 
-  const addEntry = (loc: string) =>
-    entries.push(`  <sitemap>\n    <loc>${loc}</loc>\n    <lastmod>${now}</lastmod>\n  </sitemap>`);
+  const addEntry = (loc: string, lastmodDate?: string) =>
+    entries.push(`  <sitemap>\n    <loc>${loc}</loc>\n    <lastmod>${lastmodDate || now}</lastmod>\n  </sitemap>`);
 
   // 1. Static pages
   addEntry(`${siteUrl}/sitemap-static.xml`);
@@ -55,7 +55,7 @@ ${entries.join('\n')}
   return new Response(xml, {
     headers: {
       'Content-Type': 'application/xml; charset=utf-8',
-      'Cache-Control': 'public, s-maxage=3600, stale-while-revalidate=14400',
+      'Cache-Control': 'public, s-maxage=900, stale-while-revalidate=3600',
     },
   });
 };

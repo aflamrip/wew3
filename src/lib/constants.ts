@@ -224,7 +224,7 @@ export function getFullSiteUrl(context: any): string {
   if (context.url && context.url.origin && context.url.origin !== 'null') {
     return context.url.origin.replace(/\/$/, '');
   }
-  const site = context.site ? context.site.toString().replace(/\/$/, '') : 'https://ma3ak.top';
+  const site = context.site ? context.site.toString().replace(/\/$/, '') : 'https://a.ma3ak.top';
   return site;
 }
 
