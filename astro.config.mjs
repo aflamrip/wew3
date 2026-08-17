@@ -29,7 +29,6 @@ export default defineConfig({
 
   integrations: [
     svelte(),
-    sitemap(),
     partytown({
       config: {
         forward: ['dataLayer.push'],
