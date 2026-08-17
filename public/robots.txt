@@ -18,5 +18,7 @@ Disallow: /cdn-cgi/
 
 # Sitemaps Index & Feeds
 Sitemap: https://ma3ak.top/sitemap-index.xml
+Sitemap: https://ma3ak.top/sitemap-movies-index.xml
+Sitemap: https://ma3ak.top/sitemap-tv-index.xml
 Sitemap: https://ma3ak.top/rss.xml
 Sitemap: https://ma3ak.top/atom.xml
