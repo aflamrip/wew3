@@ -98,7 +98,13 @@ export function arabicMovieTemplate(input: SeoItemInput): SeoMetadata {
     "genre": item.data?.genres || [],
     ...(director && { "director": { "@type": "Person", "name": director } }),
     ...(cast.length > 0 && { "actor": cast.map((name: string) => ({ "@type": "Person", "name": name, "url": `${safeSiteUrl}/movie/cast/${encodeURIComponent(name.trim())}` })) }),
-    "aggregateRating": { "@type": "AggregateRating", "ratingValue": "8.5", "reviewCount": "1200" },
+    ...((item.data?.rating || item.data?.vote_average) && {
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": (item.data.rating || item.data.vote_average).toString(),
+        "reviewCount": (item.data.vote_count || 100).toString()
+      }
+    }),
     "video": {
       "@type": "VideoObject",
       "name": seoTitle,
@@ -145,7 +151,13 @@ export function foreignMovieTemplate(input: SeoItemInput): SeoMetadata {
     "genre": item.data?.genres || [],
     ...(director && { "director": { "@type": "Person", "name": director } }),
     ...(cast.length > 0 && { "actor": cast.map((name: string) => ({ "@type": "Person", "name": name, "url": `${safeSiteUrl}/movie/cast/${encodeURIComponent(name.trim())}` })) }),
-    "aggregateRating": { "@type": "AggregateRating", "ratingValue": "8.5", "reviewCount": "1200" },
+    ...((item.data?.rating || item.data?.vote_average) && {
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": (item.data.rating || item.data.vote_average).toString(),
+        "reviewCount": (item.data.vote_count || 100).toString()
+      }
+    }),
     "video": {
       "@type": "VideoObject",
       "name": seoTitle,
