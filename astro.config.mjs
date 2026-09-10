@@ -28,8 +28,27 @@ export default defineConfig({
   }),
 
   integrations: [
-    integrations: [sitemap()],
     svelte(),
+    sitemap({
+      filter: (page) => !page.includes('/404') && !page.includes('/cdn/'),
+      serialize(item) {
+        if (item.url.includes('/movie') || item.url.includes('/movies')) {
+          item.changefreq = 'daily';
+          item.priority = 0.9;
+        } else if (item.url.includes('/tv')) {
+          item.changefreq = 'daily';
+          item.priority = 0.9;
+        } else if (item.url.includes('/watch')) {
+          item.changefreq = 'daily';
+          item.priority = 0.8;
+        } else {
+          item.changefreq = 'weekly';
+          item.priority = 0.5;
+        }
+        item.lastmod = new Date().toISOString();
+        return item;
+      },
+    }),
     partytown({
       config: {
         forward: ['dataLayer.push'],

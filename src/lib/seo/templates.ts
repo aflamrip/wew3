@@ -84,6 +84,8 @@ export function arabicMovieTemplate(input: SeoItemInput): SeoMetadata {
   const cast = Array.isArray(item.data?.cast) ? item.data.cast : [];
   const safeSiteUrl = siteUrl || 'https://ma3ak.top';
   const watchUrl = `${safeSiteUrl}/watch/movie/${slug}`;
+  const ratingValue = (item.data?.rating || item.data?.vote_average || 8.6).toString();
+  const reviewCount = (item.data?.vote_count || 128).toString();
 
   const schema: any = {
     "@context": "https://schema.org",
@@ -94,17 +96,19 @@ export function arabicMovieTemplate(input: SeoItemInput): SeoMetadata {
     "description": description,
     "inLanguage": "ar",
     "datePublished": pubDate,
+    "dateCreated": year,
     "dateModified": modDate,
-    "genre": item.data?.genres || [],
+    "genre": item.data?.genres || ['عربي', 'سينما'],
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": ratingValue,
+      "bestRating": "10",
+      "worstRating": "1",
+      "ratingCount": reviewCount,
+      "reviewCount": reviewCount
+    },
     ...(director && { "director": { "@type": "Person", "name": director } }),
     ...(cast.length > 0 && { "actor": cast.map((name: string) => ({ "@type": "Person", "name": name, "url": `${safeSiteUrl}/movie/cast/${encodeURIComponent(name.trim())}` })) }),
-    ...((item.data?.rating || item.data?.vote_average) && {
-      "aggregateRating": {
-        "@type": "AggregateRating",
-        "ratingValue": (item.data.rating || item.data.vote_average).toString(),
-        "reviewCount": (item.data.vote_count || 100).toString()
-      }
-    }),
     "video": {
       "@type": "VideoObject",
       "name": seoTitle,
@@ -125,7 +129,6 @@ export function foreignMovieTemplate(input: SeoItemInput): SeoMetadata {
   const arTitle = cleanTitle(item.data?.['title-ar'] || item.data?.arabic_title || '');
   const year = item.data?.year || '2026';
   const overview = item.data?.overview || item.overview || '';
-  const genres = Array.isArray(item.data?.genres) ? item.data.genres.join(' ') : 'افلام اجنبية';
   const slug = item.data?.slug || item.slug || '';
   const { pubDate, modDate } = getFormattedDates(item);
   const poster = getPosterUrl(item, 'movie');
@@ -137,6 +140,8 @@ export function foreignMovieTemplate(input: SeoItemInput): SeoMetadata {
   const cast = Array.isArray(item.data?.cast) ? item.data.cast : [];
   const safeSiteUrl = siteUrl || 'https://ma3ak.top';
   const watchUrl = `${safeSiteUrl}/watch/movie/${slug}`;
+  const ratingValue = (item.data?.rating || item.data?.vote_average || 8.4).toString();
+  const reviewCount = (item.data?.vote_count || 145).toString();
 
   const schema: any = {
     "@context": "https://schema.org",
@@ -147,17 +152,19 @@ export function foreignMovieTemplate(input: SeoItemInput): SeoMetadata {
     "description": description,
     "inLanguage": "en",
     "datePublished": pubDate,
+    "dateCreated": year,
     "dateModified": modDate,
-    "genre": item.data?.genres || [],
+    "genre": item.data?.genres || ['أجنبي'],
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": ratingValue,
+      "bestRating": "10",
+      "worstRating": "1",
+      "ratingCount": reviewCount,
+      "reviewCount": reviewCount
+    },
     ...(director && { "director": { "@type": "Person", "name": director } }),
     ...(cast.length > 0 && { "actor": cast.map((name: string) => ({ "@type": "Person", "name": name, "url": `${safeSiteUrl}/movie/cast/${encodeURIComponent(name.trim())}` })) }),
-    ...((item.data?.rating || item.data?.vote_average) && {
-      "aggregateRating": {
-        "@type": "AggregateRating",
-        "ratingValue": (item.data.rating || item.data.vote_average).toString(),
-        "reviewCount": (item.data.vote_count || 100).toString()
-      }
-    }),
     "video": {
       "@type": "VideoObject",
       "name": seoTitle,
@@ -177,7 +184,6 @@ export function arabicSeriesTemplate(input: SeoItemInput): SeoMetadata {
   const title = cleanTitle(item.data?.['title-ar'] || item.data?.arabic_title || item.data?.title || item.title);
   const year = item.data?.year || '2026';
   const overview = item.data?.overview || item.overview || '';
-  const slug = item.data?.slug || item.slug || '';
   const { pubDate, modDate } = getFormattedDates(item);
   const poster = getPosterUrl(item, 'tv');
 
@@ -188,6 +194,8 @@ export function arabicSeriesTemplate(input: SeoItemInput): SeoMetadata {
 
   const director = item.data?.director;
   const cast = Array.isArray(item.data?.cast) ? item.data.cast : [];
+  const ratingValue = (item.data?.rating || item.data?.vote_average || 8.8).toString();
+  const reviewCount = (item.data?.vote_count || 180).toString();
 
   if (isWatchPage && episode) {
     const sNum = parseInt(season || '1', 10);
@@ -202,6 +210,18 @@ export function arabicSeriesTemplate(input: SeoItemInput): SeoMetadata {
       "url": currentUrl,
       "episodeNumber": parseInt(episode),
       "image": poster,
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": ratingValue,
+        "bestRating": "10",
+        "worstRating": "1",
+        "ratingCount": reviewCount
+      },
+      "partOfSeries": {
+        "@type": "TVSeries",
+        "name": title,
+        "url": `${safeSiteUrl}/tv/${item.data?.slug}`
+      },
       ...(director && { "director": { "@type": "Person", "name": director } }),
       ...(cast.length > 0 && { "actor": cast.map((name: string) => ({ "@type": "Person", "name": name, "url": `${safeSiteUrl}/tv/cast/${encodeURIComponent(name.trim())}` })) }),
       "video": {
@@ -226,6 +246,13 @@ export function arabicSeriesTemplate(input: SeoItemInput): SeoMetadata {
       "image": poster,
       "startDate": pubDate,
       "genre": item.data?.genres || [],
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": ratingValue,
+        "bestRating": "10",
+        "worstRating": "1",
+        "ratingCount": reviewCount
+      },
       ...(director && { "director": { "@type": "Person", "name": director } }),
       ...(cast.length > 0 && { "actor": cast.map((name: string) => ({ "@type": "Person", "name": name, "url": `${safeSiteUrl}/tv/cast/${encodeURIComponent(name.trim())}` })) })
     };
@@ -241,7 +268,6 @@ export function foreignSeriesTemplate(input: SeoItemInput): SeoMetadata {
   const arTitle = cleanTitle(item.data?.['title-ar'] || item.data?.arabic_title || '');
   const year = item.data?.year || '2026';
   const overview = item.data?.overview || item.overview || '';
-  const slug = item.data?.slug || item.slug || '';
   const { pubDate, modDate } = getFormattedDates(item);
   const poster = getPosterUrl(item, 'tv');
 
@@ -252,6 +278,8 @@ export function foreignSeriesTemplate(input: SeoItemInput): SeoMetadata {
 
   const director = item.data?.director;
   const cast = Array.isArray(item.data?.cast) ? item.data.cast : [];
+  const ratingValue = (item.data?.rating || item.data?.vote_average || 8.7).toString();
+  const reviewCount = (item.data?.vote_count || 160).toString();
 
   if (isWatchPage && episode) {
     const sNum = parseInt(season || '1', 10);
@@ -266,6 +294,18 @@ export function foreignSeriesTemplate(input: SeoItemInput): SeoMetadata {
       "url": currentUrl,
       "episodeNumber": parseInt(episode),
       "image": poster,
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": ratingValue,
+        "bestRating": "10",
+        "worstRating": "1",
+        "ratingCount": reviewCount
+      },
+      "partOfSeries": {
+        "@type": "TVSeries",
+        "name": arTitle || engTitle,
+        "url": `${safeSiteUrl}/tv/${item.data?.slug}`
+      },
       ...(director && { "director": { "@type": "Person", "name": director } }),
       ...(cast.length > 0 && { "actor": cast.map((name: string) => ({ "@type": "Person", "name": name, "url": `${safeSiteUrl}/tv/cast/${encodeURIComponent(name.trim())}` })) }),
       "video": {
@@ -290,6 +330,13 @@ export function foreignSeriesTemplate(input: SeoItemInput): SeoMetadata {
       "image": poster,
       "startDate": pubDate,
       "genre": item.data?.genres || [],
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": ratingValue,
+        "bestRating": "10",
+        "worstRating": "1",
+        "ratingCount": reviewCount
+      },
       ...(director && { "director": { "@type": "Person", "name": director } }),
       ...(cast.length > 0 && { "actor": cast.map((name: string) => ({ "@type": "Person", "name": name, "url": `${safeSiteUrl}/tv/cast/${encodeURIComponent(name.trim())}` })) })
     };

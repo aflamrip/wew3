@@ -1,12 +1,11 @@
 ---
 import Layout from '../../layouts/Layout.astro';
+import NotFound from '../../components/NotFound.astro';
 import { CDN_URLS, getPrefix, getDynamicContent } from '../../lib/constants';
 
 const { type } = Astro.params;
 const validTypes = ['movie', 'movies', 'tv'];
-if (!validTypes.includes(type as string)) {
-  return Astro.redirect('/404');
-}
+const isValidType = validTypes.includes(type as string);
 
 const isMovie = type === 'movie' || type === 'movies';
 const pluralTypeForFetch = isMovie ? 'movie' : 'tv';
@@ -20,7 +19,7 @@ const currentPage = parseInt(url.searchParams.get('page') || '1');
 const itemsPerPage = 24;
 
 // SSR Fetch: Dynamic listing using helper (fetch up to 5 indices to cover growth)
-const allItems = await getDynamicContent(pluralTypeForFetch as any, 5);
+const allItems = isValidType ? await getDynamicContent(pluralTypeForFetch as any, 5) : [];
 
 // Filter by language and search query
 const filteredItems = allItems.filter(item => {
@@ -37,8 +36,9 @@ const totalItems = filteredItems.length;
 const totalPages = Math.max(1, Math.ceil(totalItems / itemsPerPage));
 const paginatedItems = filteredItems.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
-// Optimal Cache-Control for Cloudflare SSR + Edge Caching
-Astro.response.headers.set('Cache-Control', 'public, s-maxage=3600, stale-while-revalidate=14400');
+if (isValidType) {
+  Astro.response.headers.set('Cache-Control', 'public, s-maxage=3600, stale-while-revalidate=14400');
+}
 
 function getPageUrl(p: number, l: string, q = searchQuery) {
   const params = new URLSearchParams();
@@ -50,6 +50,9 @@ function getPageUrl(p: number, l: string, q = searchQuery) {
 }
 ---
 
+{!isValidType ? (
+  <NotFound message="عذراً، القسم المطلوب غير موجود." />
+) : (
 <Layout title={`تصفح كل ${localizedType} | معاك سيما`}>
   <div class="space-y-12 py-8">
     <div class="flex flex-col xl:flex-row xl:justify-between xl:items-end gap-10">
@@ -194,3 +197,4 @@ function getPageUrl(p: number, l: string, q = searchQuery) {
     )}
   </div>
 </Layout>
+)}

@@ -1,57 +1,93 @@
-// src/pages/sitemap-index.xml.ts
 import type { APIRoute } from 'astro';
 import { getSitemapData, getFullSiteUrl, formatDateWithOffset } from '../lib/constants';
-
-/** Shows processed per episode-sitemap page */
-const SHOWS_PER_EPISODE_PAGE = 20;
-/** Threshold for movies / TV pagination */
-const ITEMS_PER_SITEMAP = 500;
 
 export const GET: APIRoute = async (context) => {
   const siteUrl = getFullSiteUrl(context);
   const now = formatDateWithOffset();
 
-  const [movieData, tvData] = await Promise.all([
-    getSitemapData('movie', 45),
-    getSitemapData('tv', 45),
-  ]);
+  let movies: any[] = [];
+  let series: any[] = [];
 
-  const moviePages = Math.max(1, Math.ceil(movieData.length / ITEMS_PER_SITEMAP));
-  const tvPages = Math.max(1, Math.ceil(tvData.length / ITEMS_PER_SITEMAP));
-  const episodePages = Math.max(1, Math.ceil(tvData.length / SHOWS_PER_EPISODE_PAGE));
-
-  const entries: string[] = [];
-
-  const addEntry = (loc: string) =>
-    entries.push(`  <sitemap>\n    <loc>${loc}</loc>\n    <lastmod>${now}</lastmod>\n  </sitemap>`);
-
-  // 1. Static pages (contains <urlset>)
-  addEntry(`${siteUrl}/sitemap-static.xml`);
-
-  // 2. Movies sitemaps (contains <urlset>)
-  for (let i = 1; i <= moviePages; i++) {
-    addEntry(`${siteUrl}/sitemap-movie-${i}.xml`);
+  try {
+    const [movieRes, tvRes] = await Promise.all([
+      getSitemapData('movie', 5),
+      getSitemapData('tv', 5),
+    ]);
+    movies = movieRes || [];
+    series = tvRes || [];
+  } catch (e) {
+    console.error('Error fetching dynamic sitemap data:', e);
   }
 
-  // 3. TV show detail sitemaps (contains <urlset>)
-  for (let i = 1; i <= tvPages; i++) {
-    addEntry(`${siteUrl}/sitemap-tv-${i}.xml`);
-  }
+  const staticUrls = [
+    { loc: `${siteUrl}/`, priority: '1.0', changefreq: 'daily' },
+    { loc: `${siteUrl}/movie`, priority: '0.9', changefreq: 'daily' },
+    { loc: `${siteUrl}/tv`, priority: '0.9', changefreq: 'daily' },
+    { loc: `${siteUrl}/categories`, priority: '0.8', changefreq: 'weekly' },
+  ];
 
-  // 4. TV Episodes sitemaps (contains <urlset>)
-  for (let i = 1; i <= episodePages; i++) {
-    addEntry(`${siteUrl}/sitemap-episodes-${i}.xml`);
-  }
+  const urlsXml = staticUrls
+    .map(
+      (u) => `  <url>
+    <loc>${u.loc}</loc>
+    <lastmod>${now}</lastmod>
+    <changefreq>${u.changefreq}</changefreq>
+    <priority>${u.priority}</priority>
+  </url>`
+    )
+    .join('\n');
+
+  const moviesXml = movies
+    .map((item) => {
+      const slug = item.data?.slug;
+      if (!slug) return '';
+      return `  <url>
+    <loc>${siteUrl}/movie/${slug}</loc>
+    <lastmod>${now}</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>${siteUrl}/watch/movie/${slug}</loc>
+    <lastmod>${now}</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>`;
+    })
+    .filter(Boolean)
+    .join('\n');
+
+  const seriesXml = series
+    .map((item) => {
+      const slug = item.data?.slug;
+      if (!slug) return '';
+      return `  <url>
+    <loc>${siteUrl}/tv/${slug}</loc>
+    <lastmod>${now}</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>${siteUrl}/watch/tv/${slug}</loc>
+    <lastmod>${now}</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>`;
+    })
+    .filter(Boolean)
+    .join('\n');
 
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
-<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${entries.join('\n')}
-</sitemapindex>`;
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${urlsXml}
+${moviesXml}
+${seriesXml}
+</urlset>`;
 
   return new Response(xml, {
     headers: {
       'Content-Type': 'application/xml; charset=utf-8',
-      'Cache-Control': 'public, s-maxage=900, stale-while-revalidate=3600',
+      'Cache-Control': 'public, s-maxage=3600, stale-while-revalidate=14400',
     },
   });
 };

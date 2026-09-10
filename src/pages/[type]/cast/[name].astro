@@ -1,5 +1,6 @@
 ---
 import Layout from '../../../layouts/Layout.astro';
+import NotFound from '../../../components/NotFound.astro';
 import CastSearch from '../../../components/CastSearch.svelte';
 import { CDN_URLS } from '../../../lib/constants';
 
@@ -14,19 +15,19 @@ const actorName = decodeURIComponent(name || '').trim();
 
 // Accept "both" as type, or any valid type
 const validTypes = ['movie', 'tv', 'movies', 'series', 'both'];
+const isValidRoute = type && validTypes.includes(type as string) && !!actorName;
 
-// Default to 'both' if type is movie/tv (actor page should show all works)
-const searchType = 'both'; // Always show both movies and TV
-
-if (!type || !validTypes.includes(type as string) || !actorName) {
-  return Astro.redirect('/404');
+if (isValidRoute) {
+  Astro.response.headers.set('Cache-Control', 'public, s-maxage=7200, stale-while-revalidate=14400');
 }
 
 const pageTitle       = `أعمال ${actorName} - أفلام ومسلسلات`;
 const pageDescription = `مشاهدة جميع أفلام ومسلسلات ${actorName} بجودة عالية على موقع معاك سيما.`;
-
-Astro.response.headers.set('Cache-Control', 'public, s-maxage=7200, stale-while-revalidate=14400');
 ---
+
+{!isValidRoute ? (
+  <NotFound message="عذراً، الصفحة الخاصة بالممثل أو المخرج غير موجودة." />
+) : (
 
 <Layout title={pageTitle} description={pageDescription}>
   <div class="space-y-12 py-8">
@@ -75,4 +76,5 @@ Astro.response.headers.set('Cache-Control', 'public, s-maxage=7200, stale-while-
 
   </div>
 </Layout>
+)}
 

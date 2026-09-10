@@ -1,5 +1,6 @@
 ---
 import Layout from '../../../../layouts/Layout.astro';
+import NotFound from '../../../../components/NotFound.astro';
 import { getPrefix, getDynamicItemBySlug, getSeoPromo } from '../../../../lib/constants';
 import PlayerIsland from '../../../../components/PlayerIsland.astro';
 import EpisodeIsland from '../../../../components/EpisodeIsland.astro';
@@ -28,19 +29,15 @@ if (!item || (slug && mocks[slug] && !item.data.overview)) {
   if (slug && mocks[slug]) item = mocks[slug];
 }
 
-if (!item) {
-  return Astro.redirect('/404');
-}
-
-const isArabic = item.data.lang === 'ar';
+const isArabic = item?.data?.lang === 'ar';
 const suffix = isArabic ? 'كامل' : 'مترجم';
-const movieYear = item.data.year || (item.data.release_date ? item.data.release_date.split('-')[0] : '');
+const movieYear = item ? (item.data.year || (item.data.release_date ? item.data.release_date.split('-')[0] : '')) : '';
 
 const sRaw = extra?.split('/')[0]?.replace('s', '') || (pluralType === 'tv' ? '1' : undefined);
 const eRaw = extra?.split('/')[1]?.replace('e', '') || (pluralType === 'tv' ? '1' : undefined);
 const season = sRaw ? parseInt(sRaw, 10).toString() : undefined;
 const episode = eRaw ? parseInt(eRaw, 10).toString() : undefined;
-const prefix = getPrefix(item.id);
+const prefix = item ? getPrefix(item.id) : '';
 const canonicalUrl = Astro.url.pathname;
 
 const getArabicOrdinal = (numStr?: string) => {
@@ -58,8 +55,8 @@ const getArabicOrdinal = (numStr?: string) => {
   return ordinals[num] || '';
 };
 
-const arabicTitle = item.data?.arabic_title;
-const englishTitle = item.data?.original_title || item.data?.title || item.title;
+const arabicTitle = item?.data?.arabic_title;
+const englishTitle = item?.data?.original_title || item?.data?.title || item?.title;
 
 const isArabicSeries = !isMovie && isArabic;
 const cleanTitleFunc = (t: string) => t 
@@ -71,9 +68,14 @@ const cleanTitleFunc = (t: string) => t
   : '';
 const displayItemTitle = isArabic ? cleanTitleFunc(arabicTitle || englishTitle) : cleanTitleFunc(englishTitle);
 
-// Optimal Cache-Control for Cloudflare SSR + Edge Caching
-Astro.response.headers.set('Cache-Control', 'public, s-maxage=3600, stale-while-revalidate=14400');
+if (item) {
+  Astro.response.headers.set('Cache-Control', 'public, s-maxage=3600, stale-while-revalidate=14400');
+}
 ---
+
+{!item ? (
+  <NotFound message={`عذراً، صفحة مشاهدة ${isMovie ? 'الفيلم' : 'المسلسل'} غير موجودة أو تم حذفها.`} />
+) : (
 
 <Layout 
   canonical={canonicalUrl}
@@ -185,3 +187,4 @@ Astro.response.headers.set('Cache-Control', 'public, s-maxage=3600, stale-while-
 
   </div>
 </Layout>
+)}

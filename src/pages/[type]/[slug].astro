@@ -1,5 +1,6 @@
 ---
 import Layout from '../../layouts/Layout.astro';
+import NotFound from '../../components/NotFound.astro';
 import { CDN_URLS, getPrefix, getDynamicItemBySlug, getDynamicContent, GENRES_LIST } from '../../lib/constants';
 
 const { type, slug } = Astro.params;
@@ -24,22 +25,20 @@ if (!item || (slug && mocks[slug] && !item.data.overview)) {
   if (slug && mocks[slug]) item = mocks[slug];
 }
 
-const suggestions = (await getDynamicContent(isMovie ? 'movie' : 'tv', 1))
+const suggestions = item ? (await getDynamicContent(isMovie ? 'movie' : 'tv', 1))
   .filter(s => s.data.slug !== slug)
-  .slice(0, 6);
+  .slice(0, 6) : [];
 
-if (!item) {
-  return Astro.redirect('/404');
+const prefix = item ? getPrefix(item.id) : '';
+const posterDomainType = isMovie ? 'movies' : 'tv';
+const posterUrl = item ? `${CDN_URLS.POSTER}/${posterDomainType}/${prefix}/${item.id}/${item.id}.webp` : '';
+
+if (item) {
+  Astro.response.headers.set('Cache-Control', 'public, s-maxage=3600, stale-while-revalidate=14400');
 }
 
-const prefix = getPrefix(item.id);
-const posterDomainType = isMovie ? 'movies' : 'tv';
-const posterUrl = `${CDN_URLS.POSTER}/${posterDomainType}/${prefix}/${item.id}/${item.id}.webp`;
-
-Astro.response.headers.set('Cache-Control', 'public, s-maxage=3600, stale-while-revalidate=14400');
-
-const isArabic = item.data.lang === 'ar';
-const arabicTitle = item.data['title-ar'] || item.data.arabic_title;
+const isArabic = item?.data?.lang === 'ar';
+const arabicTitle = item?.data?.['title-ar'] || item?.data?.arabic_title;
 
 const cleanTitleStrForH1 = (t: string) => t 
   ? t.replace(/\s*ج\s*[0-9\u0660-\u0669]+/gi, '')
@@ -48,9 +47,13 @@ const cleanTitleStrForH1 = (t: string) => t
      .replace(/\s*\(?\[?[0-9]{4}\)?\]?$/g, '') 
      .trim() 
   : '';
-const displayTitleH1 = cleanTitleStrForH1(arabicTitle || item.data.title);
-const movieYear = item.data.year || (item.data.release_date ? item.data.release_date.split('-')[0] : '');
+const displayTitleH1 = item ? cleanTitleStrForH1(arabicTitle || item.data.title) : '';
+const movieYear = item ? (item.data.year || (item.data.release_date ? item.data.release_date.split('-')[0] : '')) : '';
 ---
+
+{!item ? (
+  <NotFound message={`عذراً، ${isMovie ? 'الفيلم' : 'الملسل'} المطلوب غير موجود أو تم حذفه.`} />
+) : (
 
 <Layout type={isMovie ? 'movie' : 'tv'} item={item} title={displayTitleH1}>
 
@@ -206,3 +209,4 @@ const movieYear = item.data.year || (item.data.release_date ? item.data.release_
     )}
   </div>
 </Layout>
+)}

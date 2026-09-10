@@ -1,5 +1,6 @@
 ---
 import Layout from '../../../layouts/Layout.astro';
+import NotFound from '../../../components/NotFound.astro';
 import { getDynamicContent, getPrefix, CDN_URLS, GENRES_LIST } from '../../../lib/constants';
 
 const { type, genre } = Astro.params;
@@ -12,34 +13,33 @@ const decodedGenre = genreObj ? genreObj.name : (genre || '');
 
 // Validate type
 const validTypes = ['movie', 'tv', 'movies', 'series'];
-if (!type || !validTypes.includes(type as string)) {
-  return Astro.redirect('/404');
-}
+const isValidRoute = type && validTypes.includes(type as string);
 
-// Fetch content with robust error handling
-let filteredItems = [];
-
+let filteredItems: any[] = [];
 const normalizeAr = (s: string) => s ? s.normalize('NFKC').trim() : '';
 const normalizedDecodedGenre = normalizeAr(decodedGenre);
 
-try {
-  // Use 7 pages to balance category coverage and Cloudflare Worker CPU limits
-  const allItems = await getDynamicContent(pluralType as any, 7);
-  filteredItems = allItems.filter(item => 
-    item.data.genres?.some((g: string) => normalizeAr(g) === normalizedDecodedGenre)
-  );
-} catch (e) {
-  console.error("Genre fetch error:", e);
-  filteredItems = [];
+if (isValidRoute) {
+  try {
+    const allItems = await getDynamicContent(pluralType as any, 7);
+    filteredItems = allItems.filter(item => 
+      item.data.genres?.some((g: string) => normalizeAr(g) === normalizedDecodedGenre)
+    );
+  } catch (e) {
+    console.error("Genre fetch error:", e);
+    filteredItems = [];
+  }
+  Astro.response.headers.set('Cache-Control', 'public, s-maxage=3600, stale-while-revalidate=14400');
 }
 
 const displayType = isMovie ? 'أفلام' : 'مسلسلات';
 const pageTitle = `تصفح ${displayType} ${decodedGenre} - معاك سيما`;
 const pageDescription = `مشاهدة وتنزيل أحدث الـ ${displayType} التي تنتمي لفئة ${decodedGenre} بجودة عالية على موقع معاك سيما.`;
-
-Astro.response.headers.set('Cache-Control', 'public, s-maxage=3600, stale-while-revalidate=14400');
 ---
 
+{!isValidRoute ? (
+  <NotFound message="عذراً، القسم المطلوب غير موجود." />
+) : (
 <Layout title={pageTitle} description={pageDescription}>
   <div class="space-y-12 py-8">
     
@@ -107,3 +107,4 @@ Astro.response.headers.set('Cache-Control', 'public, s-maxage=3600, stale-while-
 
   </div>
 </Layout>
+)}
