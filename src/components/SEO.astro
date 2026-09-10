@@ -27,8 +27,11 @@ if (canonical) {
     : `${siteUrl}${canonical.startsWith('/') ? '' : '/'}${canonical}`;
 }
 
-// Advanced Robots Meta logic (Optimized for Rich Snippets & Search Previews)
-const robots = noindex 
+const isWatchPage = Astro.url.pathname.includes('/watch/');
+const isNoIndex = noindex || isWatchPage;
+
+// Advanced Robots Meta logic
+const robots = isNoIndex 
   ? "noindex, follow" 
   : "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1";
 

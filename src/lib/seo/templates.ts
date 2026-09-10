@@ -196,9 +196,9 @@ export function arabicSeriesTemplate(input: SeoItemInput): SeoMetadata {
   const cast = Array.isArray(item.data?.cast) ? item.data.cast : [];
   const ratingValue = (item.data?.rating || item.data?.vote_average || 8.8).toString();
   const reviewCount = (item.data?.vote_count || 180).toString();
+  const sNum = parseInt(season || '1', 10);
 
   if (isWatchPage && episode) {
-    const sNum = parseInt(season || '1', 10);
     const sStr = sNum > 1 ? ` الموسم ${sNum}` : '';
     seoTitle = `مشاهدة مسلسل ${title}${sStr} الحلقة ${episode} ${getArabicOrdinal(episode)}`;
     description = `مشاهدة وتحميل مسلسل ${title} الحلقة ${episode} اون لاين ${overview}`;
@@ -221,6 +221,11 @@ export function arabicSeriesTemplate(input: SeoItemInput): SeoMetadata {
         "@type": "TVSeries",
         "name": title,
         "url": `${safeSiteUrl}/tv/${item.data?.slug}`
+      },
+      "partOfSeason": {
+        "@type": "TVSeason",
+        "seasonNumber": sNum,
+        "name": `الموسم ${sNum}`
       },
       ...(director && { "director": { "@type": "Person", "name": director } }),
       ...(cast.length > 0 && { "actor": cast.map((name: string) => ({ "@type": "Person", "name": name, "url": `${safeSiteUrl}/tv/cast/${encodeURIComponent(name.trim())}` })) }),
@@ -253,6 +258,14 @@ export function arabicSeriesTemplate(input: SeoItemInput): SeoMetadata {
         "worstRating": "1",
         "ratingCount": reviewCount
       },
+      "containsSeason": [
+        {
+          "@type": "TVSeason",
+          "seasonNumber": 1,
+          "name": "الموسم الأول",
+          "url": `${safeSiteUrl}/tv/${item.data?.slug}`
+        }
+      ],
       ...(director && { "director": { "@type": "Person", "name": director } }),
       ...(cast.length > 0 && { "actor": cast.map((name: string) => ({ "@type": "Person", "name": name, "url": `${safeSiteUrl}/tv/cast/${encodeURIComponent(name.trim())}` })) })
     };
@@ -280,9 +293,9 @@ export function foreignSeriesTemplate(input: SeoItemInput): SeoMetadata {
   const cast = Array.isArray(item.data?.cast) ? item.data.cast : [];
   const ratingValue = (item.data?.rating || item.data?.vote_average || 8.7).toString();
   const reviewCount = (item.data?.vote_count || 160).toString();
+  const sNum = parseInt(season || '1', 10);
 
   if (isWatchPage && episode) {
-    const sNum = parseInt(season || '1', 10);
     const sStr = sNum > 1 ? ` الموسم ${sNum}` : ' الموسم الاول';
     seoTitle = `مشاهدة مسلسل ${arTitle || engTitle}${sStr} الحلقة ${episode} مترجمة`;
     description = `مشاهدة وتحميل الحلقة ${episode} من مسلسل ${arTitle || engTitle} مترجم بجودة HD اون لاين ${overview}`;
@@ -305,6 +318,11 @@ export function foreignSeriesTemplate(input: SeoItemInput): SeoMetadata {
         "@type": "TVSeries",
         "name": arTitle || engTitle,
         "url": `${safeSiteUrl}/tv/${item.data?.slug}`
+      },
+      "partOfSeason": {
+        "@type": "TVSeason",
+        "seasonNumber": sNum,
+        "name": `الموسم ${sNum}`
       },
       ...(director && { "director": { "@type": "Person", "name": director } }),
       ...(cast.length > 0 && { "actor": cast.map((name: string) => ({ "@type": "Person", "name": name, "url": `${safeSiteUrl}/tv/cast/${encodeURIComponent(name.trim())}` })) }),
@@ -337,6 +355,14 @@ export function foreignSeriesTemplate(input: SeoItemInput): SeoMetadata {
         "worstRating": "1",
         "ratingCount": reviewCount
       },
+      "containsSeason": [
+        {
+          "@type": "TVSeason",
+          "seasonNumber": 1,
+          "name": "الموسم الأول",
+          "url": `${safeSiteUrl}/tv/${item.data?.slug}`
+        }
+      ],
       ...(director && { "director": { "@type": "Person", "name": director } }),
       ...(cast.length > 0 && { "actor": cast.map((name: string) => ({ "@type": "Person", "name": name, "url": `${safeSiteUrl}/tv/cast/${encodeURIComponent(name.trim())}` })) })
     };
