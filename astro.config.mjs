@@ -28,6 +28,7 @@ export default defineConfig({
   }),
 
   integrations: [
+    integrations: [sitemap()],
     svelte(),
     partytown({
       config: {
